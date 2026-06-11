@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+  <html lang="it">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generatore Tabella Taglie - BABA Store</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+        --black: #0a0a0a;
+    --white: #fafaf8;
+          --gray-100: #f2f0ec;
+          --gray-200: #e4e0d8;
+          --gray-400: #a09890;
+          --gray-600: #5a524a;
+    --accent: #c8a96e;
+          --accent-dark: #a8893e;
+          --danger: #c0392b;
+          --radius: 2px;
+}
+
+  body { font-family: 'DM Sans', -apple-system, sans-serif; background: var(--white); }
+
+  .gen-wrap { font-family: 'DM Sans', -apple-system, sans-serif; color: var(--black); font-size: 14px; line-height: 1.6; max-width: 860px; margin: 2rem auto; padding: 0 1rem 4rem; }
+  .gen-title { font-size: 24px; font-weight: 500; margin-bottom: 2rem; }
+  .gen-step-label { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 6px; }
+  .gen-section-title { font-size: 18px; font-weight: 400; margin-bottom: 1rem; }
+  .gen-section { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--gray-200); }
+  .gen-row { display: flex; gap: 10px; align-items: center; }
+  .gen-input { flex: 1; padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 14px; background: var(--white); color: var(--black); outline: none; transition: border-color 0.2s; }
+  .gen-input:focus { border-color: var(--accent); }
+  .gen-btn { padding: 10px 20px; border-radius: var(--radius); font-size: 13px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.15s; white-space: nowrap; font-family: inherit; border: none; }
+  .gen-btn-outline { background: transparent; border: 1px solid var(--gray-200); color: var(--black); }
+  .gen-btn-outline:hover { border-color: var(--black); }
+  .gen-btn-accent { background: var(--black); border: 1px solid var(--black); color: var(--white); font-weight: 500; }
+  .gen-btn-accent:hover { background: var(--gray-600); border-color: var(--gray-600); }
+  .gen-btn-copy { background: var(--accent); border: 1px solid var(--accent); color: var(--white); font-weight: 500; }
+  .gen-btn-copy:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .gen-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .gen-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 5px 12px; font-size: 13px; }
+  .gen-tag-remove { background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 16px; line-height: 1; padding: 0; transition: color 0.15s; }
+  .gen-tag-remove:hover { color: var(--danger); }
+  .gen-table-wrap { overflow-x: auto; border: 1px solid var(--gray-200); border-radius: var(--radius); }
+  .gen-table { width: 100%; border-collapse: collapse; }
+  .gen-table th { background: var(--gray-100); padding: 10px 14px; text-align: left; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); }
+  .gen-table td { padding: 8px 10px; border-bottom: 1px solid var(--gray-100); }
+  .gen-table tr:last-child td { border-bottom: none; }
+  .gen-table td input { width: 90px; padding: 6px 10px; font-size: 13px; border: 1px solid var(--gray-200); border-radius: var(--radius); font-family: inherit; outline: none; }
+  .gen-table td input:focus { border-color: var(--accent); }
+  .gen-output-box { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+  .gen-textarea { width: 100%; font-family: monospace; font-size: 12px; line-height: 1.6; background: transparent; border: none; outline: none; resize: vertical; color: var(--gray-600); min-height: 140px; }
+  .gen-preview-box { border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .gen-preview-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 1rem; }
+  .gen-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .gen-success { font-size: 13px; color: #2d7a4f; margin-left: 4px; opacity: 0; transition: opacity 0.3s; }
+  .gen-hint { font-size: 12px; color: var(--gray-400); margin-bottom: 12px; }
+  .gen-note { background: #fff8ed; border: 1px solid #f0d9a0; border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1.5rem; font-size: 13px; line-height: 1.7; color: var(--gray-600); }
+      .gen-note strong { color: var(--black); font-weight: 500; }
+  .gen-note code { background: #f0d9a0; padding: 1px 6px; border-radius: 2px; font-size: 12px; font-family: monospace; }
+      #gen-table-section { display: none; }
+      #gen-output-section { display: none; }
+
+      /* Preview table styling (matches what gets generated) */
+  .size-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .size-table th, .size-table td { border: 1px solid #ddd; padding: 8px 10px; text-align: center; }
+  .size-table th { background: #f5f5f5; font-weight: 600; }
+      .size-table th:first-child, .size-table td:first-child { text-align: left; font-weight: 600; }
+</style>
+  </head>
+  <body>
+  <div class="gen-wrap">
+  <div class="gen-title">Generatore Tabella Taglie — BABA Store</div>
+
+  <div class="gen-section">
+  <div class="gen-step-label">Step 01</div>
+  <div class="gen-section-title">Colonne (misure)</div>
+  <p class="gen-hint">Inserisci i nomi delle misure (es: Vita, Lunghezza, Manica, Fondo...)</p>
+  <div class="gen-row">
+  <input type="text" id="gen-col-input" class="gen-input" placeholder="Nome misura...">
+  <button class="gen-btn gen-btn-outline" id="gen-add-col">+ Aggiungi</button>
+  </div>
+  <div class="gen-tags" id="gen-cols-tags"></div>
+  </div>
+
+  <div class="gen-section">
+  <div class="gen-step-label">Step 02</div>
+  <div class="gen-section-title">Taglie</div>
+  <p class="gen-hint">Inserisci le taglie del prodotto (es: S, M, L, XL oppure 44, 46, 48, 50...)</p>
+  <div class="gen-row">
+  <input type="text" id="gen-row-input" class="gen-input" placeholder="Taglia...">
+  <button class="gen-btn gen-btn-outline" id="gen-add-row">+ Aggiungi</button>
+  </div>
+  <div class="gen-tags" id="gen-rows-tags"></div>
+  </div>
+
+  <div class="gen-section" id="gen-table-section">
+  <div class="gen-step-label">Step 03</div>
+  <div class="gen-section-title">Misure</div>
+  <p class="gen-hint">Inserisci i valori in cm (lascia vuoto per mostrare —)</p>
+<div class="gen-table-wrap">
+<table class="gen-table">
+<thead id="gen-table-head"></thead>
+<tbody id="gen-table-body"></tbody>
+  </table>
+  </div>
+  <div style="margin-top: 1.5rem;"><button class="gen-btn gen-btn-accent" id="gen-generate-btn">Genera HTML →</button></div>
+  </div>
+
+  <div id="gen-output-section">
+  <div class="gen-step-label">Step 04</div>
+  <div class="gen-section-title" style="margin-bottom: 1rem;">Risultato</div>
+  <div class="gen-preview-box">
+  <div class="gen-preview-title">Anteprima</div>
+  <div id="gen-preview-render"></div>
+  </div>
+  <div class="gen-output-box"><textarea class="gen-textarea" id="gen-output" readonly></textarea></div>
+  <div class="gen-actions">
+  <button class="gen-btn gen-btn-copy" id="gen-copy-btn">Copia HTML</button>
+  <button class="gen-btn gen-btn-outline" id="gen-restart-btn">Ricomincia</button>
+  <span class="gen-success" id="gen-copied-msg">✓ Copiato!</span>
+  </div>
+  <div class="gen-note">
+  <strong>Come usare:</strong> vai sul prodotto Shopify → scorri fino ai Metafield → apri <code>tabella_taglie_html</code> → incolla l'HTML copiato → salva.
+  </div>
+  </div>
+
+  </div>
+
+  <script>
+  (function() {
+    let columns = [];
+  let rows = [];
+  let values = {}; // values[rowIndex][colIndex] = string
+
+  const colInput = document.getElementById('gen-col-input');
+  const rowInput = document.getElementById('gen-row-input');
+  const colsTags = document.getElementById('gen-cols-tags');
+  const rowsTags = document.getElementById('gen-rows-tags');
+  const tableSection = document.getElementById('gen-table-section');
+  const tableHead = document.getElementById('gen-table-head');
+  const tableBody = document.getElementById('gen-table-body');
+  const outputSection = document.getElementById('gen-output-section');
+  const outputTextarea = document.getElementById('gen-output');
+  const previewRender = document.getElementById('gen-preview-render');
+  const copiedMsg = document.getElementById('gen-copied-msg');
+
+  function addCol() {
+        const val = colInput.value.trim();
+    if (!val) return;
+    columns.push(val);
+    colInput.value = '';
+          renderTags();
+    rebuildTable();
+    }
+
+  function addRow() {
+        const val = rowInput.value.trim();
+    if (!val) return;
+    rows.push(val);
+    rowInput.value = '';
+          renderTags();
+    rebuildTable();
+    }
+
+  function removeCol(index) {
+        columns.splice(index, 1);
+    Object.keys(values).forEach(r => {
+            if (values[r]) delete values[r][index];
+      });
+    renderTags();
+    rebuildTable();
+  }
+
+  function removeRow(index) {
+        rows.splice(index, 1);
+    delete values[index];
+    renderTags();
+    rebuildTable();
+  }
+
+  function renderTags() {
+        colsTags.innerHTML = '';
+    columns.forEach((col, i) => {
+            const tag = document.createElement('div');
+            tag.className = 'gen-tag';
+      tag.innerHTML = '<span></span><button class="gen-tag-remove" type="button">×</button>';
+      tag.querySelector('span').textContent = col;
+      tag.querySelector('button').addEventListener('click', () => removeCol(i));
+      colsTags.appendChild(tag);
+  });
+
+    rowsTags.innerHTML = '';
+          rows.forEach((row, i) => {
+                  const tag = document.createElement('div');
+                  tag.className = 'gen-tag';
+      tag.innerHTML = '<span></span><button class="gen-tag-remove" type="button">×</button>';
+      tag.querySelector('span').textContent = row;
+      tag.querySelector('button').addEventListener('click', () => removeRow(i));
+      rowsTags.appendChild(tag);
+  });
+}
+
+  function rebuildTable() {
+        if (columns.length === 0 || rows.length === 0) {
+      tableSection.style.display = 'none';
+      outputSection.style.display = 'none';
+      return;
+        }
+    tableSection.style.display = 'block';
+
+    // Header
+    let headHtml = '<tr><th>Taglia</th>';
+    columns.forEach(col => {
+            headHtml += '<th>' + escapeHtml(col) + ' (cm)</th>';
+  });
+    headHtml += '</tr>';
+    tableHead.innerHTML = headHtml;
+
+    // Body
+    tableBody.innerHTML = '';
+          rows.forEach((row, rIdx) => {
+                  const tr = document.createElement('tr');
+                  const tdLabel = document.createElement('td');
+      tdLabel.textContent = row;
+      tr.appendChild(tdLabel);
+
+      columns.forEach((col, cIdx) => {
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = '—';
+        input.dataset.row = rIdx;
+        input.dataset.col = cIdx;
+        if (values[rIdx] && values[rIdx][cIdx] !== undefined) {
+          input.value = values[rIdx][cIdx];
+}
+        input.addEventListener('input', (e) => {
+          const r = e.target.dataset.row;
+          const c = e.target.dataset.col;
+          if (!values[r]) values[r] = {};
+          values[r][c] = e.target.value;
+});
+        td.appendChild(input);
+        tr.appendChild(td);
+});
+
+      tableBody.appendChild(tr);
+});
+}
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+  function generateHtml() {
+    let html = '<table class="size-table">\n  <thead>\n    <tr>\n      <th>Taglia</th>\n';
+    columns.forEach(col => {
+      html += '      <th>' + escapeHtml(col) + ' (cm)</th>\n';
+});
+    html += '    </tr>\n  </thead>\n  <tbody>\n';
+
+    rows.forEach((row, rIdx) => {
+      html += '    <tr>\n      <td>' + escapeHtml(row) + '</td>\n';
+      columns. forEach((col, cIdx) => {
+        const val = (values[rIdx] && values[rIdx][cIdx]) ? values[rIdx][cIdx].trim() : '';
+        html += '      <td>' + (val ? escapeHtml(val) : '—') + '</td>\n';
+});      });
+      html += '    </tr>\n';
+});
+
+    html += '  </tbody>\n</table>\n<style>\n.size-table { width: 100%; border-collapse: collapse; font-size: 13px; }\n.size-table th, .size-table td { border: 1px solid #ddd; padding: 8px 10px; text-align: center; }\n.size-table th { background: #f5f5f5; font-weight: 600; }\n.size-table th:first-child, .size-table td:first-child { text-align: left; font-weight: 600; }\n</style>';
+
+    outputTextarea.value = html;
+    previewRender.innerHTML = html;
+    outputSection.style.display = 'block';
+    outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+  function copyOutput() {
+    outputTextarea.select();
+    outputTextarea.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(outputTextarea.value).then(() => {
+      copiedMsg.style.opacity = '1';
+      setTimeout(() => { copiedMsg.style.opacity = '0'; }, 1800);
+}).catch(() => {
+      document.execCommand('copy');
+      copiedMsg.style.opacity = '1';
+      setTimeout(() => { copiedMsg.style.opacity = '0'; }, 1800);
+});
+}
+
+  function restart() {
+    columns = [];
+    rows = [];
+    values = {};
+    renderTags();
+    rebuildTable();
+    outputSection.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+  document.getElementById('gen-add-col').addEventListener('click', addCol);
+  document.getElementById('gen-add-row').addEventListener('click', addRow);
+  colInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCol(); } });
+  rowInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addRow(); } });
+  document.getElementById('gen-generate-btn').addEventListener('click', generateHtml);
+  document.getElementById('gen-copy-btn').addEventListener('click', copyOutput);
+  document.getElementById('gen-restart-btn').addEventListener('click', restart);
+})();
+</script>
+</body>
+</html>
