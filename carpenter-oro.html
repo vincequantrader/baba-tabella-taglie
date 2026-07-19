@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BABA — Carpenter Shorts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #231f20;
+    --white: #ffffff;
+    --offwhite: #f5f5f5;
+    --grey: #d9d9d9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { text-decoration: none; color: inherit; }
+
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8vh 6vw 10vh;
+    background:
+      radial-gradient(120% 90% at 50% 0%, #3a3436 0%, #231f20 55%, #131113 100%);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 90px);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    color: #c9c3c0;
+    font-weight: 600;
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 9vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: 0.01em;
+  }
+  .tagline {
+    max-width: 420px;
+    margin: 22px auto 0;
+    font-size: 0.98rem;
+    color: #cfc9c6;
+    line-height: 1.5;
+  }
+  .price-row {
+    margin-top: 30px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+  }
+  .price-note { font-size: 0.78rem; color: #a8a2a0; letter-spacing: 0.02em; }
+
+  .discount-badge {
+    margin-top: 26px;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 999px;
+    padding: 10px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+  }
+  .discount-badge .pct {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  .discount-badge .code strong { letter-spacing: 0.04em; }
+
+  .cta-btn {
+    margin-top: 34px;
+    background: var(--white);
+    color: var(--black);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 16px 38px;
+    border-radius: 2px;
+    letter-spacing: 0.01em;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .cta-btn:hover { background: var(--grey); transform: translateY(-1px); }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 26px;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: #8a8482;
+  }
+
+  .colors {
+    background: var(--offwhite);
+    padding: 64px 6vw 30px;
+  }
+  .colors h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 1.7rem;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .colors .sub {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #6b6664;
+    margin-bottom: 36px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--grey);
+  }
+  .card {
+    background: var(--grey);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-img {
+    aspect-ratio: 3/4;
+    background-size: cover;
+    background-position: center;
+  }
+  .card-label {
+    background: var(--white);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .card .arrow { transition: transform 0.15s ease; }
+  .card:hover .arrow { transform: translateX(4px); }
+
+  .footer {
+    background: var(--offwhite);
+    text-align: center;
+    padding: 40px 6vw 70px;
+  }
+  .footer .note {
+    font-size: 0.78rem;
+    color: #6b6664;
+    max-width: 340px;
+    margin: 0 auto 26px;
+    line-height: 1.5;
+  }
+  .footer .cta-btn {
+    background: var(--black);
+    color: var(--white);
+  }
+  .footer .cta-btn:hover { background: #3a3436; }
+  .made {
+    margin-top: 30px;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: #8a8482;
+  }
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="eyebrow">RISERVATO A TE — ORO</div>
+    <h1>Carpenter<br>Shorts</h1>
+    <p class="tagline">Costruito come un capo da lavoro, pensato per tutt'altro.</p>
+    <div class="price-row">
+      <span class="price">€49</span>
+      <span class="price-note">cotone 500gr · made in Italy</span>
+    </div>
+    
+        <div class="discount-badge">
+          <span class="pct">-20%</span>
+          <span class="code">codice <strong>ORO20</strong></span>
+        </div>
+    <a class="cta-btn" href="#colori">Sblocca lo sconto</a>
+    <div class="scroll-cue">SCORRI PER I COLORI ↓</div>
+  </section>
+
+  <section class="colors" id="colori">
+    <h2>4 colori disponibili</h2>
+    <p class="sub">Scegli il tuo e vai dritto al prodotto</p>
+    <div class="grid">
+      
+        <a class="card" href="https://baba-store.it/products/baba-carpenter-shorts-black" target="_blank" rel="noopener">
+          <div class="card-img" style="background-image:url('https://cdn.shopify.com/s/files/1/0781/9676/9115/files/short_baba_cargo_shopify_1376x2048_5ee31574-e0ce-4826-8502-499c9a331d45.jpg')"></div>
+          <div class="card-label">
+            <span>Nero</span>
+            <span class="arrow">&#8594;</span>
+          </div>
+        </a>
+
+        <a class="card" href="https://baba-store.it/products/baba-carpenter-shorts-light-grey" target="_blank" rel="noopener">
+          <div class="card-img" style="background-image:url('https://cdn.shopify.com/s/files/1/0781/9676/9115/files/BABA_Carpenter_tuta_Grey_front.jpg')"></div>
+          <div class="card-label">
+            <span>Grigio</span>
+            <span class="arrow">&#8594;</span>
+          </div>
+        </a>
+
+        <a class="card" href="https://baba-store.it/products/baba-carpenter-shorts-cream" target="_blank" rel="noopener">
+          <div class="card-img" style="background-image:url('https://cdn.shopify.com/s/files/1/0781/9676/9115/files/BABA_Carpenter_tuta_Beige_front.jpg')"></div>
+          <div class="card-label">
+            <span>Beige</span>
+            <span class="arrow">&#8594;</span>
+          </div>
+        </a>
+
+        <a class="card" href="https://baba-store.it/products/baba-carpenter-shorts-sky" target="_blank" rel="noopener">
+          <div class="card-img" style="background-image:url('https://cdn.shopify.com/s/files/1/0781/9676/9115/files/BABA_Carpenter_tuta_Azzurro_front.png')"></div>
+          <div class="card-label">
+            <span>Sky</span>
+            <span class="arrow">&#8594;</span>
+          </div>
+        </a>
+    </div>
+  </section>
+
+  <section class="footer">
+    <p class="note">Sconto valido finché dura lo stock. Pochi pezzi per colore.</p>
+    <a class="cta-btn" href="https://baba-store.it/products/baba-carpenter-shorts-black" target="_blank" rel="noopener">Sblocca lo sconto</a>
+    <div class="made">BABA STORE — MADE IN ITALY</div>
+  </section>
+
+</body>
+</html>
